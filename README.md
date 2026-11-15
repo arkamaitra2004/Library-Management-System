@@ -7,6 +7,7 @@ A Java and MySQL based console application for managing library books.
 - Search Book
 - Issue Book
 - Return Book
+- Delete Book
 
 ## Technologies Used
 - Java
