@@ -76,6 +76,24 @@ public class LibraryManagementSystem {
             System.out.print("Enter Book ID: ");
             int id = sc.nextInt();
 
+            // Check if the book exists and whether it is already issued
+            String checkQuery = "SELECT issued FROM books WHERE book_id=?";
+
+            PreparedStatement checkPs = con.prepareStatement(checkQuery);
+            checkPs.setInt(1, id);
+
+            ResultSet rs = checkPs.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("Book not found!");
+                return;
+            }
+
+            if (rs.getBoolean("issued")) {
+                System.out.println("Book is already issued!");
+                return;
+            }
+
             String query =
                     "UPDATE books SET issued=true WHERE book_id=?";
 
@@ -102,6 +120,24 @@ public class LibraryManagementSystem {
             System.out.print("Enter Book ID: ");
             int id = sc.nextInt();
 
+            // Check if the book exists and whether it is currently issued
+            String checkQuery = "SELECT issued FROM books WHERE book_id=?";
+
+            PreparedStatement checkPs = con.prepareStatement(checkQuery);
+            checkPs.setInt(1, id);
+
+            ResultSet rs = checkPs.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("Book not found!");
+                return;
+            }
+
+            if (!rs.getBoolean("issued")) {
+                System.out.println("Book is not issued, so it cannot be returned!");
+                return;
+            }
+
             String query =
                     "UPDATE books SET issued=false WHERE book_id=?";
 
@@ -121,6 +157,31 @@ public class LibraryManagementSystem {
         }
     }
 
+    // Delete Book
+    public static void deleteBook() {
+        try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD)) {
+
+            System.out.print("Enter Book ID: ");
+            int id = sc.nextInt();
+
+            String query = "DELETE FROM books WHERE book_id=?";
+
+            PreparedStatement ps = con.prepareStatement(query);
+
+            ps.setInt(1, id);
+
+            int rows = ps.executeUpdate();
+
+            if (rows > 0)
+                System.out.println("Book deleted successfully!");
+            else
+                System.out.println("Book not found!");
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
 
         int choice;
@@ -132,7 +193,8 @@ public class LibraryManagementSystem {
             System.out.println("2. Search Book");
             System.out.println("3. Issue Book");
             System.out.println("4. Return Book");
-            System.out.println("5. Exit");
+            System.out.println("5. Delete Book");
+            System.out.println("6. Exit");
 
             System.out.print("Enter choice: ");
 
@@ -157,6 +219,10 @@ public class LibraryManagementSystem {
                     break;
 
                 case 5:
+                    deleteBook();
+                    break;
+
+                case 6:
                     System.out.println("Thank you!");
                     break;
 
@@ -164,7 +230,7 @@ public class LibraryManagementSystem {
                     System.out.println("Invalid choice!");
             }
 
-        } while (choice != 5);
+        } while (choice != 6);
 
         sc.close();
     }
