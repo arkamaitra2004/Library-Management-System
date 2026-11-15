@@ -8,4 +8,4 @@ CREATE TABLE books (
     author VARCHAR(100),
     issued BOOLEAN
 );
-Add database schema
+
